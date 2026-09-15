@@ -7,13 +7,13 @@ supabase/.temp/
 # Android / Gradle
 *.iml
 .gradle/
-/local.properties
-/.idea/
+local.properties
+.idea/
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+build/
+captures/
+.externalNativeBuild/
+.cxx/
 *.apk
 *.aab
 
