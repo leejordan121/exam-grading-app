@@ -86,6 +86,41 @@ data class SubmissionSubmitUpdateDto(
 )
 
 @Serializable
+data class GradeSubmissionRequest(@SerialName("submission_id") val submissionId: String)
+
+@Serializable
+data class ExamResultSettingsDto(
+    val title: String,
+    @SerialName("show_question_breakdown") val showQuestionBreakdown: Boolean = true,
+    @SerialName("show_ai_feedback") val showAiFeedback: Boolean = false
+)
+
+@Serializable
+data class SubmissionResultRow(
+    val status: String,
+    @SerialName("final_score") val finalScore: Double? = null,
+    @SerialName("total_marks") val totalMarks: Double? = null,
+    val percentage: Double? = null,
+    val grade: String? = null,
+    @SerialName("result_visible") val resultVisible: Boolean = false,
+    val exam: ExamResultSettingsDto
+)
+
+@Serializable
+data class ResultQuestionEmbedDto(
+    @SerialName("question_number") val questionNumber: Int,
+    @SerialName("question_text") val questionText: String,
+    @SerialName("max_marks") val maxMarks: Double
+)
+
+@Serializable
+data class ResultExtractedAnswerRow(
+    @SerialName("final_score") val finalScore: Double? = null,
+    @SerialName("grading_reason") val gradingReason: String? = null,
+    val question: ResultQuestionEmbedDto
+)
+
+@Serializable
 data class SubmissionPageInsertDto(
     @SerialName("submission_id") val submissionId: String,
     @SerialName("page_number") val pageNumber: Int,

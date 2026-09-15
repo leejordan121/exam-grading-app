@@ -16,6 +16,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -27,14 +28,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.examgrading.app.domain.models.ExamSummary
 import com.examgrading.app.domain.models.StudentSubmission
+import com.examgrading.app.ui.common.submissionStatusLabel
 
 @Composable
 fun StudentHomeScreen(
     onOpenExam: (examId: String) -> Unit,
+    onOpenResult: (submissionId: String) -> Unit,
     viewModel: StudentHomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var tab by remember { mutableIntStateOf(0) }
+
+    // Re-fetch every time this screen re-enters composition (e.g. returning
+    // from a submission or exam detail screen), so status/results stay fresh.
+    LaunchedEffect(Unit) { viewModel.refresh() }
 
     Scaffold { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
@@ -61,7 +68,7 @@ fun StudentHomeScreen(
             if (tab == 0) {
                 ExamsList(exams = state.exams, onOpenExam = onOpenExam)
             } else {
-                ResultsList(results = state.results)
+                ResultsList(results = state.results, onOpenResult = onOpenResult)
             }
         }
     }
@@ -99,20 +106,25 @@ private fun ExamsList(exams: List<ExamSummary>, onOpenExam: (String) -> Unit) {
 }
 
 @Composable
-private fun ResultsList(results: List<StudentSubmission>) {
+private fun ResultsList(results: List<StudentSubmission>, onOpenResult: (String) -> Unit) {
     if (results.isEmpty()) {
         EmptyState("No results yet.")
         return
     }
     LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         items(results, key = { it.id }) { result ->
-            Card(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 6.dp)
+                    .clickable { onOpenResult(result.id) }
+            ) {
                 Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                     Text(result.examTitle, style = MaterialTheme.typography.titleLarge)
                     val scoreText = if (result.resultVisible && result.finalScore != null) {
                         "${result.finalScore} / ${result.totalMarks}  (${result.grade ?: "-"})"
                     } else {
-                        "Status: ${result.status}"
+                        submissionStatusLabel(result.status)
                     }
                     Text(scoreText, style = MaterialTheme.typography.bodyLarge)
                 }

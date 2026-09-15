@@ -18,6 +18,7 @@ import com.examgrading.app.ui.auth.LoginScreen
 import com.examgrading.app.ui.auth.LoginUiState
 import com.examgrading.app.ui.student.StudentHomeScreen
 import com.examgrading.app.ui.student.examdetail.ExamDetailScreen
+import com.examgrading.app.ui.student.result.ResultDetailScreen
 import com.examgrading.app.ui.student.submission.SubmissionScreen
 import com.examgrading.app.ui.teacher.TeacherHomeScreen
 import com.examgrading.app.ui.teacher.examcreate.ExamWizardScreen
@@ -49,8 +50,15 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
         }
         composable(Routes.StudentHome.route) {
             StudentHomeScreen(
-                onOpenExam = { examId -> navController.navigate(Routes.ExamDetail.build(examId)) }
+                onOpenExam = { examId -> navController.navigate(Routes.ExamDetail.build(examId)) },
+                onOpenResult = { submissionId -> navController.navigate(Routes.ResultDetail.build(submissionId)) }
             )
+        }
+        composable(
+            Routes.ResultDetail.route,
+            arguments = listOf(navArgument("submissionId") { type = NavType.StringType })
+        ) {
+            ResultDetailScreen(onBack = { navController.popBackStack() })
         }
         composable(
             Routes.ExamDetail.route,

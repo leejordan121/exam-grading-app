@@ -126,7 +126,12 @@ class SubmissionViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             studentExamRepository.submitExam(submissionId)
-                .onSuccess { _state.update { it.copy(isLoading = false, submitted = true) } }
+                .onSuccess {
+                    _state.update { it.copy(isLoading = false, submitted = true) }
+                    // Fire-and-forget: grading runs server-side, the student
+                    // doesn't wait on it (spec section 66).
+                    launch { studentExamRepository.triggerGrading(submissionId) }
+                }
                 .onFailure { e -> _state.update { it.copy(isLoading = false, error = e.message ?: "Failed to submit") } }
         }
     }

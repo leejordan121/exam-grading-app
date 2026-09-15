@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.examgrading.app.domain.models.SubmissionListItem
+import com.examgrading.app.ui.common.submissionStatusLabel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +39,8 @@ fun ExamSubmissionsScreen(
     viewModel: ExamSubmissionsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) { viewModel.refresh() }
 
     Scaffold(
         topBar = {
@@ -76,7 +80,7 @@ private fun SubmissionCard(submission: SubmissionListItem, onClick: () -> Unit) 
             val scoreText = if (submission.finalScore != null) {
                 "${submission.finalScore} / ${submission.totalMarks}"
             } else {
-                "Status: ${submission.status}"
+                submissionStatusLabel(submission.status)
             }
             Text(scoreText, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = 4.dp))
             if (submission.needsReview) {

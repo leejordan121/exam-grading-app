@@ -18,4 +18,7 @@ sealed class Routes(val route: String) {
     data object SubmissionReview : Routes("submission_review/{submissionId}") {
         fun build(submissionId: String) = "submission_review/$submissionId"
     }
+    data object ResultDetail : Routes("result_detail/{submissionId}") {
+        fun build(submissionId: String) = "result_detail/$submissionId"
+    }
 }

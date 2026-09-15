@@ -2,9 +2,12 @@ package com.examgrading.app.data.student
 
 import com.examgrading.app.domain.models.ExamDetail
 import com.examgrading.app.domain.models.ExamSummary
+import com.examgrading.app.domain.models.ResultQuestionRow
 import com.examgrading.app.domain.models.StudentSubmission
+import com.examgrading.app.domain.models.SubmissionResultDetail
 import com.examgrading.app.domain.repositories.StudentExamRepository
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.functions.functions
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.storage.storage
@@ -121,6 +124,60 @@ class StudentExamRepositoryImpl @Inject constructor(
         ) {
             filter { eq("id", submissionId) }
         }
+        Unit
+    }
+
+    override suspend fun getSubmissionResultDetail(submissionId: String): Result<SubmissionResultDetail> = runCatching {
+        val submission = supabase.postgrest.from("submissions")
+            .select(
+                columns = Columns.raw(
+                    "status,final_score,total_marks,percentage,grade,result_visible," +
+                        "exam:exams(title,show_question_breakdown,show_ai_feedback)"
+                )
+            ) {
+                filter { eq("id", submissionId) }
+            }
+            .decodeSingle<SubmissionResultRow>()
+
+        val questions = if (submission.resultVisible && submission.exam.showQuestionBreakdown) {
+            supabase.postgrest.from("extracted_answers")
+                .select(
+                    columns = Columns.raw(
+                        "final_score,grading_reason,question:questions(question_number,question_text,max_marks)"
+                    )
+                ) {
+                    filter { eq("submission_id", submissionId) }
+                }
+                .decodeList<ResultExtractedAnswerRow>()
+                .sortedBy { it.question.questionNumber }
+                .map {
+                    ResultQuestionRow(
+                        questionNumber = it.question.questionNumber,
+                        questionText = it.question.questionText,
+                        score = it.finalScore,
+                        maxMarks = it.question.maxMarks,
+                        feedback = if (submission.exam.showAiFeedback) it.gradingReason else null
+                    )
+                }
+        } else {
+            emptyList()
+        }
+
+        SubmissionResultDetail(
+            examTitle = submission.exam.title,
+            status = submission.status,
+            finalScore = submission.finalScore,
+            totalMarks = submission.totalMarks,
+            percentage = submission.percentage,
+            grade = submission.grade,
+            resultVisible = submission.resultVisible,
+            showBreakdown = submission.exam.showQuestionBreakdown,
+            questions = questions
+        )
+    }
+
+    override suspend fun triggerGrading(submissionId: String): Result<Unit> = runCatching {
+        supabase.functions.invoke("grade-submission", body = GradeSubmissionRequest(submissionId))
         Unit
     }
 
