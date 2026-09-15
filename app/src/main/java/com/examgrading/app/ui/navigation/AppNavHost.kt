@@ -21,6 +21,8 @@ import com.examgrading.app.ui.student.examdetail.ExamDetailScreen
 import com.examgrading.app.ui.student.submission.SubmissionScreen
 import com.examgrading.app.ui.teacher.TeacherHomeScreen
 import com.examgrading.app.ui.teacher.examcreate.ExamWizardScreen
+import com.examgrading.app.ui.teacher.submissions.ExamSubmissionsScreen
+import com.examgrading.app.ui.teacher.submissions.SubmissionReviewScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController = rememberNavController()) {
@@ -71,7 +73,10 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
             )
         }
         composable(Routes.TeacherHome.route) {
-            TeacherHomeScreen(onCreateExam = { navController.navigate(Routes.ExamWizard.route) })
+            TeacherHomeScreen(
+                onCreateExam = { navController.navigate(Routes.ExamWizard.route) },
+                onOpenExam = { examId -> navController.navigate(Routes.ExamSubmissions.build(examId)) }
+            )
         }
         composable(Routes.AdminHome.route) { AdminHomeScreen() }
         composable(Routes.ExamWizard.route) {
@@ -81,6 +86,23 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
                     navController.popBackStack(Routes.TeacherHome.route, inclusive = false)
                 }
             )
+        }
+        composable(
+            Routes.ExamSubmissions.route,
+            arguments = listOf(navArgument("examId") { type = NavType.StringType })
+        ) {
+            ExamSubmissionsScreen(
+                onBack = { navController.popBackStack() },
+                onOpenSubmission = { submissionId ->
+                    navController.navigate(Routes.SubmissionReview.build(submissionId))
+                }
+            )
+        }
+        composable(
+            Routes.SubmissionReview.route,
+            arguments = listOf(navArgument("submissionId") { type = NavType.StringType })
+        ) {
+            SubmissionReviewScreen(onBack = { navController.popBackStack() })
         }
     }
 }

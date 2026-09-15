@@ -3,9 +3,11 @@ package com.examgrading.app.core.di
 import com.examgrading.app.data.auth.AuthRepositoryImpl
 import com.examgrading.app.data.exams.ExamRepositoryImpl
 import com.examgrading.app.data.student.StudentExamRepositoryImpl
+import com.examgrading.app.data.teacher.TeacherSubmissionsRepositoryImpl
 import com.examgrading.app.domain.repositories.AuthRepository
 import com.examgrading.app.domain.repositories.ExamRepository
 import com.examgrading.app.domain.repositories.StudentExamRepository
+import com.examgrading.app.domain.repositories.TeacherSubmissionsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -27,4 +29,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindStudentExamRepository(impl: StudentExamRepositoryImpl): StudentExamRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTeacherSubmissionsRepository(impl: TeacherSubmissionsRepositoryImpl): TeacherSubmissionsRepository
 }
