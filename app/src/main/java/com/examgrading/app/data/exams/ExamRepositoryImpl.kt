@@ -196,4 +196,11 @@ class ExamRepositoryImpl @Inject constructor(
         }
         Unit
     }
+
+    override suspend fun deleteExam(examId: String): Result<Unit> = runCatching {
+        supabase.postgrest.from("exams").delete {
+            filter { eq("id", examId) }
+        }
+        Unit
+    }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.examgrading.app.core.utils.isAllowedDocumentExtension
 import com.examgrading.app.core.utils.readPickedFile
 import com.examgrading.app.domain.models.GradingMode
 import com.examgrading.app.domain.models.QuestionDraft
@@ -96,6 +97,10 @@ class ExamWizardViewModel @Inject constructor(
             _state.update { it.copy(error = "Couldn't read the selected file.") }
             return
         }
+        if (!isAllowedDocumentExtension(file.name)) {
+            _state.update { it.copy(error = "Unsupported file type. Use PDF, JPG, PNG, or DOC/DOCX.") }
+            return
+        }
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             examRepository.uploadExamPaper(schoolId, examId, file.name, file.bytes)
@@ -115,6 +120,10 @@ class ExamWizardViewModel @Inject constructor(
         val teacherId = s.teacherId ?: return
         val file = readPickedFile(context, uri) ?: run {
             _state.update { it.copy(error = "Couldn't read the selected file.") }
+            return
+        }
+        if (!isAllowedDocumentExtension(file.name)) {
+            _state.update { it.copy(error = "Unsupported file type. Use PDF, JPG, PNG, or DOC/DOCX.") }
             return
         }
         viewModelScope.launch {

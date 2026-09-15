@@ -1,11 +1,11 @@
-package com.examgrading.app.ui.teacher
+package com.examgrading.app.ui.admin.exams
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.examgrading.app.domain.models.TeacherExamSummary
+import com.examgrading.app.domain.models.AdminExamSummary
+import com.examgrading.app.domain.repositories.AdminRepository
 import com.examgrading.app.domain.repositories.AuthRepository
 import com.examgrading.app.domain.repositories.ExamRepository
-import com.examgrading.app.domain.repositories.TeacherSubmissionsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,23 +14,23 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class TeacherHomeState(
-    val exams: List<TeacherExamSummary> = emptyList(),
+data class AdminExamsState(
+    val exams: List<AdminExamSummary> = emptyList(),
     val isLoading: Boolean = true,
     val error: String? = null,
-    val examPendingDelete: TeacherExamSummary? = null,
+    val examPendingDelete: AdminExamSummary? = null,
     val isDeleting: Boolean = false
 )
 
 @HiltViewModel
-class TeacherHomeViewModel @Inject constructor(
-    private val teacherSubmissionsRepository: TeacherSubmissionsRepository,
+class AdminExamsViewModel @Inject constructor(
+    private val adminRepository: AdminRepository,
     private val examRepository: ExamRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(TeacherHomeState())
-    val state: StateFlow<TeacherHomeState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(AdminExamsState())
+    val state: StateFlow<AdminExamsState> = _state.asStateFlow()
 
     init {
         refresh()
@@ -41,7 +41,7 @@ class TeacherHomeViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, error = null) }
             authRepository.getCurrentProfile()
                 .onSuccess { profile ->
-                    teacherSubmissionsRepository.getMyExams(profile.id)
+                    adminRepository.getAllExams(profile.schoolId)
                         .onSuccess { exams -> _state.update { it.copy(isLoading = false, exams = exams) } }
                         .onFailure { e -> _state.update { it.copy(isLoading = false, error = e.message) } }
                 }
@@ -49,7 +49,7 @@ class TeacherHomeViewModel @Inject constructor(
         }
     }
 
-    fun requestDelete(exam: TeacherExamSummary) = _state.update { it.copy(examPendingDelete = exam) }
+    fun requestDelete(exam: AdminExamSummary) = _state.update { it.copy(examPendingDelete = exam) }
 
     fun cancelDelete() = _state.update { it.copy(examPendingDelete = null) }
 

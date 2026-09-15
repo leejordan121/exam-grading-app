@@ -4,6 +4,7 @@ import com.examgrading.app.core.network.ensureValidSession
 import com.examgrading.app.data.exams.ClassDto
 import com.examgrading.app.data.exams.SubjectDto
 import com.examgrading.app.data.exams.toDomain
+import com.examgrading.app.domain.models.AdminExamSummary
 import com.examgrading.app.domain.models.CreatedUserResult
 import com.examgrading.app.domain.models.SchoolClass
 import com.examgrading.app.domain.models.StaffSummary
@@ -22,6 +23,29 @@ import javax.inject.Singleton
 class AdminRepositoryImpl @Inject constructor(
     private val supabase: SupabaseClient
 ) : AdminRepository {
+
+    override suspend fun getAllExams(schoolId: String): Result<List<AdminExamSummary>> = runCatching {
+        supabase.postgrest.from("exams")
+            .select(
+                columns = Columns.raw(
+                    "id,title,exam_date,status,subject:subjects(name),teacher:profiles(full_name)"
+                )
+            ) {
+                filter { eq("school_id", schoolId) }
+                order("created_at", Order.DESCENDING)
+            }
+            .decodeList<AdminExamRow>()
+            .map {
+                AdminExamSummary(
+                    examId = it.id,
+                    title = it.title,
+                    subjectName = it.subject?.name,
+                    teacherName = it.teacher?.fullName,
+                    examDate = it.examDate,
+                    status = it.status
+                )
+            }
+    }
 
     override suspend fun getSubjects(schoolId: String): Result<List<Subject>> = runCatching {
         supabase.postgrest.from("subjects")

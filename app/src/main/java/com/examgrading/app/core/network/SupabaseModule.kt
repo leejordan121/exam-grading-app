@@ -27,11 +27,18 @@ object SupabaseModule {
 
     @Provides
     @Singleton
-    fun provideSupabaseClient(): SupabaseClient = createSupabaseClient(
+    fun provideSupabaseClient(androidSessionManager: AndroidSessionManager): SupabaseClient = createSupabaseClient(
         supabaseUrl = BuildConfig.SUPABASE_URL,
         supabaseKey = BuildConfig.SUPABASE_PUBLISHABLE_KEY
     ) {
-        install(Auth)
+        install(Auth) {
+            sessionManager = androidSessionManager
+            // The default pauses auto-refresh when the app loses focus, which
+            // happens constantly here (camera, file/document pickers) - that
+            // was letting the access token actually expire before the app
+            // came back, instead of getting silently refreshed in time.
+            enableLifecycleCallbacks = false
+        }
         install(Postgrest)
         install(Storage)
         install(Realtime)

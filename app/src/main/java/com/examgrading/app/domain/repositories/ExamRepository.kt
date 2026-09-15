@@ -55,4 +55,11 @@ interface ExamRepository {
      * student in [classId], and flips status draft -> published.
      */
     suspend fun publishExam(examId: String, classId: String): Result<Unit>
+
+    /**
+     * Permanently deletes the exam and everything under it (questions,
+     * answer key, submissions, grades) via cascading foreign keys. RLS
+     * restricts this to the owning teacher or a school admin.
+     */
+    suspend fun deleteExam(examId: String): Result<Unit>
 }

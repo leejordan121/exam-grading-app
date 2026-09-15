@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.examgrading.app.ui.common.DatePickerField
 import com.examgrading.app.ui.common.SimpleDropdown
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,11 +52,11 @@ fun BasicInfoStep(state: ExamWizardState, viewModel: ExamWizardViewModel) {
             modifier = Modifier.padding(top = 12.dp)
         )
 
-        OutlinedTextField(
-            value = state.examDate,
-            onValueChange = viewModel::updateExamDate,
-            label = { Text("Exam date (YYYY-MM-DD)") },
-            modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
+        DatePickerField(
+            label = "Exam date",
+            isoDate = state.examDate,
+            onDateSelected = viewModel::updateExamDate,
+            modifier = Modifier.padding(top = 12.dp)
         )
 
         OutlinedTextField(

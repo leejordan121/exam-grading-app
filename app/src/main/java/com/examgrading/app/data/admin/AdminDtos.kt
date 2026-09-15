@@ -4,6 +4,22 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class AdminExamSubjectNameDto(val name: String? = null)
+
+@Serializable
+data class AdminExamTeacherNameDto(@SerialName("full_name") val fullName: String? = null)
+
+@Serializable
+data class AdminExamRow(
+    val id: String,
+    val title: String,
+    @SerialName("exam_date") val examDate: String? = null,
+    val status: String,
+    val subject: AdminExamSubjectNameDto? = null,
+    val teacher: AdminExamTeacherNameDto? = null
+)
+
+@Serializable
 data class SubjectInsertDto(
     @SerialName("school_id") val schoolId: String,
     val name: String,

@@ -1,11 +1,14 @@
 package com.examgrading.app.domain.repositories
 
+import com.examgrading.app.domain.models.AdminExamSummary
 import com.examgrading.app.domain.models.CreatedUserResult
 import com.examgrading.app.domain.models.SchoolClass
 import com.examgrading.app.domain.models.StaffSummary
 import com.examgrading.app.domain.models.Subject
 
 interface AdminRepository {
+    /** All exams in the school, across every teacher, for the admin exams list. */
+    suspend fun getAllExams(schoolId: String): Result<List<AdminExamSummary>>
     suspend fun getSubjects(schoolId: String): Result<List<Subject>>
     suspend fun createSubject(schoolId: String, name: String, code: String?): Result<Unit>
 

@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import com.examgrading.app.domain.models.UserRole
 import com.examgrading.app.ui.admin.AdminHomeScreen
 import com.examgrading.app.ui.admin.classes.ClassesScreen
+import com.examgrading.app.ui.admin.exams.AdminExamsScreen
 import com.examgrading.app.ui.admin.people.PeopleScreen
 import com.examgrading.app.ui.admin.subjects.SubjectsScreen
 import com.examgrading.app.ui.auth.AuthViewModel
@@ -91,11 +92,15 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
         }
         composable(Routes.AdminHome.route) {
             AdminHomeScreen(
+                onOpenExams = { navController.navigate(Routes.AdminExams.route) },
                 onOpenSubjects = { navController.navigate(Routes.AdminSubjects.route) },
                 onOpenClasses = { navController.navigate(Routes.AdminClasses.route) },
                 onOpenTeachers = { navController.navigate(Routes.AdminPeople.build("teacher")) },
                 onOpenStudents = { navController.navigate(Routes.AdminPeople.build("student")) }
             )
+        }
+        composable(Routes.AdminExams.route) {
+            AdminExamsScreen(onBack = { navController.popBackStack() })
         }
         composable(Routes.AdminSubjects.route) {
             SubjectsScreen(onBack = { navController.popBackStack() })

@@ -6,25 +6,17 @@ import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContract
 
 /**
- * ACTION_OPEN_DOCUMENT restricted to PDF/JPG/PNG/DOC(X) — GetContent() only
- * accepts a single MIME type, which can't express "PDF is preferred but
- * images and Word docs are also supported" (spec section 11).
+ * ACTION_OPEN_DOCUMENT with no MIME restriction. EXTRA_MIME_TYPES filtering
+ * isn't honored consistently across every picker source (some cloud/gallery
+ * providers hide files entirely instead of just greying them out), so this
+ * shows everything and the caller validates the extension after picking —
+ * PDF/JPG/PNG/DOC(X) per spec section 11.
  */
 class DocumentPickerContract : ActivityResultContract<Unit, Uri?>() {
     override fun createIntent(context: Context, input: Unit): Intent =
         Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "*/*"
-            putExtra(
-                Intent.EXTRA_MIME_TYPES,
-                arrayOf(
-                    "application/pdf",
-                    "image/jpeg",
-                    "image/png",
-                    "application/msword",
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
-            )
         }
 
     override fun parseResult(resultCode: Int, intent: Intent?): Uri? =

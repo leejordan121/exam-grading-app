@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AdminHomeScreen(
+    onOpenExams: () -> Unit,
     onOpenSubjects: () -> Unit,
     onOpenClasses: () -> Unit,
     onOpenTeachers: () -> Unit,
@@ -27,6 +28,7 @@ fun AdminHomeScreen(
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
+            AdminSectionCard("Exams", "View and delete exams created by any teacher", onOpenExams)
             AdminSectionCard("Subjects", "Manage the subjects taught at your school", onOpenSubjects)
             AdminSectionCard("Classes", "Manage grade levels and sections", onOpenClasses)
             AdminSectionCard("Teachers", "Add and view teacher accounts", onOpenTeachers)

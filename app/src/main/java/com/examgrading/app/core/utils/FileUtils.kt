@@ -8,6 +8,11 @@ import java.io.File
 
 data class PickedFile(val name: String, val bytes: ByteArray)
 
+val ALLOWED_DOCUMENT_EXTENSIONS = setOf("pdf", "jpg", "jpeg", "png", "doc", "docx")
+
+fun isAllowedDocumentExtension(fileName: String): Boolean =
+    fileName.substringAfterLast('.', "").lowercase() in ALLOWED_DOCUMENT_EXTENSIONS
+
 fun readPickedFile(context: Context, uri: Uri): PickedFile? {
     val name = context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
         val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
