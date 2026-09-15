@@ -5,4 +5,5 @@ sealed class Routes(val route: String) {
     data object StudentHome : Routes("student_home")
     data object TeacherHome : Routes("teacher_home")
     data object AdminHome : Routes("admin_home")
+    data object ExamWizard : Routes("exam_wizard")
 }

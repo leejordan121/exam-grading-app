@@ -16,6 +16,7 @@ import com.examgrading.app.ui.auth.LoginScreen
 import com.examgrading.app.ui.auth.LoginUiState
 import com.examgrading.app.ui.student.StudentHomeScreen
 import com.examgrading.app.ui.teacher.TeacherHomeScreen
+import com.examgrading.app.ui.teacher.examcreate.ExamWizardScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController = rememberNavController()) {
@@ -41,7 +42,17 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
             LoginScreen(uiState = uiState, onSignIn = viewModel::signIn)
         }
         composable(Routes.StudentHome.route) { StudentHomeScreen() }
-        composable(Routes.TeacherHome.route) { TeacherHomeScreen() }
+        composable(Routes.TeacherHome.route) {
+            TeacherHomeScreen(onCreateExam = { navController.navigate(Routes.ExamWizard.route) })
+        }
         composable(Routes.AdminHome.route) { AdminHomeScreen() }
+        composable(Routes.ExamWizard.route) {
+            ExamWizardScreen(
+                onBack = { navController.popBackStack() },
+                onPublished = {
+                    navController.popBackStack(Routes.TeacherHome.route, inclusive = false)
+                }
+            )
+        }
     }
 }
