@@ -108,7 +108,10 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:storage-kt")
     implementation("io.github.jan-tennert.supabase:realtime-kt")
     implementation("io.github.jan-tennert.supabase:functions-kt")
-    implementation("io.ktor:ktor-client-okhttp:2.3.12")
+    // Must track the Ktor version supabase-kt's BOM actually resolves
+    // (ktor-client-core), not an independently chosen version - a mismatch
+    // here compiles fine but throws ClassNotFoundException at runtime.
+    implementation("io.ktor:ktor-client-okhttp:3.0.1")
 
     // CameraX (paper scanning)
     implementation("androidx.camera:camera-core:1.3.4")
