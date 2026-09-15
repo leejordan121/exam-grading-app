@@ -1,0 +1,12 @@
+{
+  "name": "exam-grading-app-tooling",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Supabase CLI tooling for the AI Exam Paper & Automatic Grading App (Android + Supabase backend)",
+  "devDependencies": {
+    "supabase": "^2.0.0"
+  },
+  "scripts": {
+    "supabase": "supabase"
+  }
+}
