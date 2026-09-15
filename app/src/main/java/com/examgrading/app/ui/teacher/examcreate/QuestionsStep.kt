@@ -13,11 +13,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,15 +20,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.examgrading.app.domain.models.QuestionDraft
 import com.examgrading.app.domain.models.QuestionType
+import com.examgrading.app.ui.common.SimpleDropdown
 
 @Composable
 fun QuestionsStep(state: ExamWizardState, viewModel: ExamWizardViewModel) {
@@ -67,7 +59,6 @@ fun QuestionsStep(state: ExamWizardState, viewModel: ExamWizardViewModel) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun QuestionCard(
     question: QuestionDraft,
@@ -94,32 +85,15 @@ private fun QuestionCard(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
             )
 
-            var typeExpanded by remember { mutableStateOf(false) }
-            ExposedDropdownMenuBox(
-                expanded = typeExpanded,
-                onExpandedChange = { typeExpanded = it },
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-            ) {
-                OutlinedTextField(
-                    value = question.questionType.label,
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Type") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
-                    modifier = Modifier.menuAnchor().fillMaxWidth()
-                )
-                DropdownMenu(expanded = typeExpanded, onDismissRequest = { typeExpanded = false }) {
-                    QuestionType.entries.forEach { type ->
-                        DropdownMenuItem(
-                            text = { Text(type.label) },
-                            onClick = {
-                                onChange { it.copy(questionType = type) }
-                                typeExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
+            SimpleDropdown(
+                label = "Type",
+                options = QuestionType.entries,
+                optionLabel = { it.label },
+                idOf = { it.name },
+                selectedId = question.questionType.name,
+                onSelect = { type -> onChange { it.copy(questionType = type) } },
+                modifier = Modifier.padding(top = 8.dp)
+            )
 
             OutlinedTextField(
                 value = question.maxMarks,

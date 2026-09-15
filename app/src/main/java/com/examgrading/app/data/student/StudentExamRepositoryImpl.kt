@@ -1,5 +1,6 @@
 package com.examgrading.app.data.student
 
+import com.examgrading.app.core.network.ensureValidSession
 import com.examgrading.app.domain.models.ExamDetail
 import com.examgrading.app.domain.models.ExamSummary
 import com.examgrading.app.domain.models.ResultQuestionRow
@@ -83,6 +84,7 @@ class StudentExamRepositoryImpl @Inject constructor(
         pageNumber: Int,
         bytes: ByteArray
     ): Result<Unit> = runCatching {
+        supabase.ensureValidSession()
         val path = "$schoolId/$submissionId/page-$pageNumber.jpg"
         supabase.storage.from("student-submissions").upload(path, bytes) { upsert = true }
         supabase.postgrest.from("submission_pages").upsert(
@@ -177,6 +179,7 @@ class StudentExamRepositoryImpl @Inject constructor(
     }
 
     override suspend fun triggerGrading(submissionId: String): Result<Unit> = runCatching {
+        supabase.ensureValidSession()
         supabase.functions.invoke("grade-submission", body = GradeSubmissionRequest(submissionId))
         Unit
     }

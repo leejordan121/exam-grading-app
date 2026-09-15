@@ -3,6 +3,7 @@ package com.examgrading.app.data.exams
 import com.examgrading.app.domain.models.QuestionDraft
 import com.examgrading.app.domain.models.SchoolClass
 import com.examgrading.app.domain.models.Subject
+import com.examgrading.app.core.network.ensureValidSession
 import com.examgrading.app.domain.repositories.ExamRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
@@ -92,6 +93,7 @@ class ExamRepositoryImpl @Inject constructor(
         fileName: String,
         bytes: ByteArray
     ): Result<String> = runCatching {
+        supabase.ensureValidSession()
         val extension = fileName.substringAfterLast('.', "pdf")
         val path = "$schoolId/$examId/paper.$extension"
         supabase.storage.from("exam-papers").upload(path, bytes) { upsert = true }
@@ -108,6 +110,7 @@ class ExamRepositoryImpl @Inject constructor(
         fileName: String,
         bytes: ByteArray
     ): Result<String> = runCatching {
+        supabase.ensureValidSession()
         val extension = fileName.substringAfterLast('.', "pdf")
         val path = "$schoolId/$examId/answer-key.$extension"
         supabase.storage.from("answer-keys").upload(path, bytes) { upsert = true }

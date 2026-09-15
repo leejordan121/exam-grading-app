@@ -21,4 +21,9 @@ sealed class Routes(val route: String) {
     data object ResultDetail : Routes("result_detail/{submissionId}") {
         fun build(submissionId: String) = "result_detail/$submissionId"
     }
+    data object AdminSubjects : Routes("admin_subjects")
+    data object AdminClasses : Routes("admin_classes")
+    data object AdminPeople : Routes("admin_people/{role}") {
+        fun build(role: String) = "admin_people/$role"
+    }
 }

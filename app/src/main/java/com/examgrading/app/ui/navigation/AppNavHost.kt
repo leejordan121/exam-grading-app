@@ -13,6 +13,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.examgrading.app.domain.models.UserRole
 import com.examgrading.app.ui.admin.AdminHomeScreen
+import com.examgrading.app.ui.admin.classes.ClassesScreen
+import com.examgrading.app.ui.admin.people.PeopleScreen
+import com.examgrading.app.ui.admin.subjects.SubjectsScreen
 import com.examgrading.app.ui.auth.AuthViewModel
 import com.examgrading.app.ui.auth.LoginScreen
 import com.examgrading.app.ui.auth.LoginUiState
@@ -86,7 +89,26 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
                 onOpenExam = { examId -> navController.navigate(Routes.ExamSubmissions.build(examId)) }
             )
         }
-        composable(Routes.AdminHome.route) { AdminHomeScreen() }
+        composable(Routes.AdminHome.route) {
+            AdminHomeScreen(
+                onOpenSubjects = { navController.navigate(Routes.AdminSubjects.route) },
+                onOpenClasses = { navController.navigate(Routes.AdminClasses.route) },
+                onOpenTeachers = { navController.navigate(Routes.AdminPeople.build("teacher")) },
+                onOpenStudents = { navController.navigate(Routes.AdminPeople.build("student")) }
+            )
+        }
+        composable(Routes.AdminSubjects.route) {
+            SubjectsScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Routes.AdminClasses.route) {
+            ClassesScreen(onBack = { navController.popBackStack() })
+        }
+        composable(
+            Routes.AdminPeople.route,
+            arguments = listOf(navArgument("role") { type = NavType.StringType })
+        ) {
+            PeopleScreen(onBack = { navController.popBackStack() })
+        }
         composable(Routes.ExamWizard.route) {
             ExamWizardScreen(
                 onBack = { navController.popBackStack() },

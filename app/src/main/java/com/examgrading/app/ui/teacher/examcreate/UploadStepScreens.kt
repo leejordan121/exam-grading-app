@@ -1,7 +1,6 @@
 package com.examgrading.app.ui.teacher.examcreate
 
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,11 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.examgrading.app.core.utils.DocumentPickerContract
 
 @Composable
 fun UploadPaperStep(state: ExamWizardState, viewModel: ExamWizardViewModel) {
     val context = LocalContext.current
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+    val launcher = rememberLauncherForActivityResult(DocumentPickerContract()) { uri ->
         uri?.let { viewModel.uploadPaper(context, it) }
     }
 
@@ -33,7 +33,7 @@ fun UploadPaperStep(state: ExamWizardState, viewModel: ExamWizardViewModel) {
         description = "PDF is preferred; JPG and PNG are also supported. Students will download and print this.",
         fileName = state.paperFileName,
         canContinue = state.paperFileName != null,
-        onPick = { launcher.launch("application/pdf") },
+        onPick = { launcher.launch(Unit) },
         onContinue = { viewModel.goToStep(2) }
     )
 }
@@ -41,7 +41,7 @@ fun UploadPaperStep(state: ExamWizardState, viewModel: ExamWizardViewModel) {
 @Composable
 fun UploadAnswerKeyStep(state: ExamWizardState, viewModel: ExamWizardViewModel) {
     val context = LocalContext.current
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+    val launcher = rememberLauncherForActivityResult(DocumentPickerContract()) { uri ->
         uri?.let { viewModel.uploadAnswerKey(context, it) }
     }
 
@@ -50,7 +50,7 @@ fun UploadAnswerKeyStep(state: ExamWizardState, viewModel: ExamWizardViewModel) 
         description = "This is stored separately and is never accessible to students.",
         fileName = state.answerKeyFileName,
         canContinue = state.answerKeyFileName != null,
-        onPick = { launcher.launch("application/pdf") },
+        onPick = { launcher.launch(Unit) },
         onContinue = { viewModel.goToStep(3) }
     )
 }
